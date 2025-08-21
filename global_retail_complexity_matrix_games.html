@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Retail Complexity Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .controls-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .control-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .control-card h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .count-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .control-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s ease;
+        }
+        
+        .control-item:hover {
+            border-color: #667eea;
+        }
+        
+        .control-item input[type="checkbox"] {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .control-item label {
+            flex: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .control-item button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+        
+        .add-item {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .add-item input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+        
+        .add-item button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .add-item button:hover {
+            opacity: 0.9;
+        }
+        
+        .matrix-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .matrix-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #495057;
+        }
+        
+        .matrix-container {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        
+        .matrix-grid {
+            display: grid;
+            gap: 2px;
+            font-size: 0.85em;
+            min-width: 600px;
+        }
+        
+        .matrix-header {
+            background: #495057;
+            color: white;
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .matrix-row-header {
+            background: #6c757d;
+            color: white;
+            padding: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+        
+        .matrix-cell {
+            background: #e9ecef;
+            padding: 4px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .matrix-cell:hover {
+            background: #dee2e6;
+        }
+        
+        .matrix-cell.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .matrix-cell input[type="checkbox"] {
+            cursor: pointer;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .stat-card.total {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            grid-column: span 2;
+        }
+        
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+        
+        .calculation-breakdown {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .calculation-formula {
+            font-size: 1.2em;
+            color: #495057;
+            margin: 10px 0;
+        }
+        
+        .calculation-formula span {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .quick-action-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-action-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .asset-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            transform: scale(1);
+            transition: transform 0.3s ease;
+            cursor: default;
+        }
+        
+        .asset-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .asset-card:hover .asset-controls {
+            opacity: 1;
+        }
+        
+        .asset-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .asset-control-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid white;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+        
+        .asset-control-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .asset-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .asset-label {
+            font-size: 1em;
+            opacity: 0.95;
+        }
+        
+        .footnote {
+            margin-top: 40px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            .controls-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card.total {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Global Retail Complexity Calculator</h1>
+            <p class="subtitle">Visualize the exponential complexity of global product launches</p>
+        </div>
+        
+        <div class="quick-actions">
+            <button class="quick-action-btn" onclick="loadPreset('simple')">Simple Launch</button>
+            <button class="quick-action-btn" onclick="loadPreset('standard')">Standard Launch</button>
+            <button class="quick-action-btn" onclick="loadPreset('aaa')">AAA Game Launch</button>
+            <button class="quick-action-btn" onclick="selectAllRegions()">Select All Regions</button>
+            <button class="quick-action-btn" onclick="clearAll()">Clear All</button>
+        </div>
+        
+        <div class="controls-section">
+            <div class="control-card">
+                <h3>
+                    📦 Editions/Variants
+                    <span class="count-badge" id="editions-count">2</span>
+                </h3>
+                <div class="control-items" id="editions-list">
+                    <div class="control-item">
+                        <input type="checkbox" id="edition-standard" checked>
+                        <label for="edition-standard">Standard</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="edition-deluxe" checked>
+                        <label for="edition-deluxe">Deluxe</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="edition-ultimate" checked>
+                        <label for="edition-ultimate">Ultimate</label>
+                    </div>
+                </div>
+                <div class="add-item">
+                    <input type="text" id="new-edition" placeholder="Add edition...">
+                    <button onclick="addItem('editions')">Add</button>
+                </div>
+            </div>
+            
+            <div class="control-card">
+                <h3>
+                    🎮 Platforms
+                    <span class="count-badge" id="platforms-count">4</span>
+                </h3>
+                <div class="control-items" id="platforms-list">
+                    <div class="control-item">
+                        <input type="checkbox" id="platform-ps5" checked>
+                        <label for="platform-ps5">PlayStation 5</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="platform-ps4" checked>
+                        <label for="platform-ps4">PlayStation 4</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="platform-xbox" checked>
+                        <label for="platform-xbox">Xbox Series X|S</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="platform-nintendo" checked>
+                        <label for="platform-nintendo">Nintendo Switch</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="platform-pc" checked>
+                        <label for="platform-pc">PC (Steam)</label>
+                    </div>
+                </div>
+                <div class="add-item">
+                    <input type="text" id="new-platform" placeholder="Add platform...">
+                    <button onclick="addItem('platforms')">Add</button>
+                </div>
+            </div>
+            
+            <div class="control-card">
+                <h3>
+                    🌍 Languages
+                    <span class="count-badge" id="languages-count">12</span>
+                </h3>
+                <div class="control-items" id="languages-list">
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-en" checked>
+                        <label for="lang-en">English</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-fr" checked>
+                        <label for="lang-fr">French</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-de" checked>
+                        <label for="lang-de">German</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-es" checked>
+                        <label for="lang-es">Spanish</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-it" checked>
+                        <label for="lang-it">Italian</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-pt" checked>
+                        <label for="lang-pt">Portuguese</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-ru" checked>
+                        <label for="lang-ru">Russian</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-ja" checked>
+                        <label for="lang-ja">Japanese</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-ko" checked>
+                        <label for="lang-ko">Korean</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-zh-cn" checked>
+                        <label for="lang-zh-cn">Chinese (Simplified)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-zh-tw" checked>
+                        <label for="lang-zh-tw">Chinese (Traditional)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="lang-ar" checked>
+                        <label for="lang-ar">Arabic</label>
+                    </div>
+                </div>
+                <div class="add-item">
+                    <input type="text" id="new-language" placeholder="Add language...">
+                    <button onclick="addItem('languages')">Add</button>
+                </div>
+            </div>
+            
+            <div class="control-card">
+                <h3>
+                    🏷️ Regions/Ratings
+                    <span class="count-badge" id="regions-count">12</span>
+                </h3>
+                <div class="control-items" id="regions-list">
+                    <div class="control-item">
+                        <input type="checkbox" id="region-us" checked>
+                        <label for="region-us">US (ESRB)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-ca" checked>
+                        <label for="region-ca">Canada</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-uk" checked>
+                        <label for="region-uk">UK (PEGI)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-de" checked>
+                        <label for="region-de">Germany (USK)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-fr" checked>
+                        <label for="region-fr">France (PEGI)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-es" checked>
+                        <label for="region-es">Spain (PEGI)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-jp" checked>
+                        <label for="region-jp">Japan (CERO)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-kr" checked>
+                        <label for="region-kr">Korea (GRAC)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-au" checked>
+                        <label for="region-au">Australia (ACB)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-br" checked>
+                        <label for="region-br">Brazil (ClassInd)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-ru" checked>
+                        <label for="region-ru">Russia (RARS)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="region-sa" checked>
+                        <label for="region-sa">Saudi (GCAM)</label>
+                    </div>
+                </div>
+                <div class="add-item">
+                    <input type="text" id="new-region" placeholder="Add region...">
+                    <button onclick="addItem('regions')">Add</button>
+                </div>
+            </div>
+            
+            <div class="control-card">
+                <h3>
+                    🛒 Retailers
+                    <span class="count-badge" id="retailers-count">10</span>
+                </h3>
+                <div class="control-items" id="retailers-list">
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-amazon" checked>
+                        <label for="retailer-amazon">Amazon</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-bestbuy" checked>
+                        <label for="retailer-bestbuy">Best Buy</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-target" checked>
+                        <label for="retailer-target">Target</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-walmart" checked>
+                        <label for="retailer-walmart">Walmart</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-gamestop" checked>
+                        <label for="retailer-gamestop">GameStop</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-steam" checked>
+                        <label for="retailer-steam">Steam</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-playstation" checked>
+                        <label for="retailer-playstation">PlayStation Store</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-xbox" checked>
+                        <label for="retailer-xbox">Xbox Store</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-epic" checked>
+                        <label for="retailer-epic">Epic Games</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-game" checked>
+                        <label for="retailer-game">GAME (UK)</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-argos" checked>
+                        <label for="retailer-argos">Argos</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-currys" checked>
+                        <label for="retailer-currys">Currys</label>
+                    </div>
+                    <div class="control-item">
+                        <input type="checkbox" id="retailer-mediamarkt" checked>
+                        <label for="retailer-mediamarkt">MediaMarkt</label>
+                    </div>
+                </div>
+                <div class="add-item">
+                    <input type="text" id="new-retailer" placeholder="Add retailer...">
+                    <button onclick="addItem('retailers')">Add</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="matrix-section">
+            <h2 class="matrix-title">Platform × Region Matrix</h2>
+            <div class="matrix-container">
+                <div class="matrix-grid" id="matrix-grid">
+                    <!-- Matrix will be generated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-number" id="stat-editions">2</span>
+                <span class="stat-label">Editions</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="stat-platforms">4</span>
+                <span class="stat-label">Platforms</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="stat-languages">12</span>
+                <span class="stat-label">Languages</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="stat-regions">12</span>
+                <span class="stat-label">Regions</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="stat-retailers">10</span>
+                <span class="stat-label">Retailers</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="stat-matrix">48</span>
+                <span class="stat-label">Active SKUs</span>
+            </div>
+        </div>
+        
+        <div class="calculation-breakdown">
+            <h3>Calculation Formula</h3>
+            <div class="calculation-formula">
+                <span id="calc-editions">2</span> Editions × 
+                <span id="calc-platforms">4</span> Platforms × 
+                <span id="calc-languages">12</span> Languages × 
+                <span id="calc-regions">12</span> Regions × 
+                <span id="calc-retailers">10</span> Retailers × 
+                <span id="calc-matrix">48</span> Active SKUs
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card total">
+                <span class="stat-number" id="total-combinations">0</span>
+                <span class="stat-label">Potential Listing Variations</span>
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card total">
+                <span class="stat-number" id="total-assets">0</span>
+                <span class="stat-label">Potential Asset Variations</span>
+            </div>
+        </div>
+        
+        <h2 style="text-align: center; color: #495057; margin: 40px 0 20px 0; font-size: 1.5em; font-weight: bold;">Asset Requirements</h2>
+        
+        <div class="stats-row">
+            <div class="asset-card">
+                <div class="asset-controls">
+                    <button class="asset-control-btn" onclick="adjustAsset('atf', 1)">+</button>
+                    <button class="asset-control-btn" onclick="adjustAsset('atf', -1)">−</button>
+                </div>
+                <span class="asset-number" id="asset-atf">8</span>
+                <span class="asset-label">Above the Fold</span>
+            </div>
+            <div class="asset-card">
+                <div class="asset-controls">
+                    <button class="asset-control-btn" onclick="adjustAsset('btf', 1)">+</button>
+                    <button class="asset-control-btn" onclick="adjustAsset('btf', -1)">−</button>
+                </div>
+                <span class="asset-number" id="asset-btf">12</span>
+                <span class="asset-label">Below the Fold</span>
+            </div>
+            <div class="asset-card">
+                <div class="asset-controls">
+                    <button class="asset-control-btn" onclick="adjustAsset('display', 1)">+</button>
+                    <button class="asset-control-btn" onclick="adjustAsset('display', -1)">−</button>
+                </div>
+                <span class="asset-number" id="asset-display">8</span>
+                <span class="asset-label">Display Ads</span>
+            </div>
+            <div class="asset-card">
+                <div class="asset-controls">
+                    <button class="asset-control-btn" onclick="adjustAsset('crm', 1)">+</button>
+                    <button class="asset-control-btn" onclick="adjustAsset('crm', -1)">−</button>
+                </div>
+                <span class="asset-number" id="asset-crm">6</span>
+                <span class="asset-label">CRM Assets</span>
+            </div>
+        </div>
+        
+        <div class="footnote">
+            <strong>⚠️ What This Means:</strong>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>Each combination needs unique product descriptions and marketing copy</li>
+                <li>Region-specific pricing and promotional strategies</li>
+                <li>Platform-specific technical requirements and features</li>
+                <li>Retailer-specific asset formats and specifications</li>
+                <li>Language localization with cultural adaptation</li>
+                <li>Compliance with local advertising and rating standards</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                <strong>This exponential complexity is why professional Global Retail Channel Support is essential!</strong>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Data storage
+        let data = {
+            editions: [],
+            platforms: [],
+            languages: [],
+            regions: [],
+            retailers: [],
+            matrix: {},
+            assets: {
+                atf: 8,
+                btf: 12,
+                display: 8,
+                crm: 6
+            }
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            updateAllCounts();
+            generateMatrix();
+            calculateTotal();
+            calculateAssets();
+            calculateAssets();
+            
+            // Add event listeners to all checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    updateAllCounts();
+                    generateMatrix();
+                    calculateTotal();
+                    calculateAssets();
+                });
+            });
+        });
+        
+        function adjustAsset(type, delta) {
+            data.assets[type] = Math.max(0, data.assets[type] + delta);
+            document.getElementById(`asset-${type}`).textContent = data.assets[type];
+            calculateAssets();
+        }
+        
+        function calculateAssets() {
+            const listings = parseInt(document.getElementById('total-combinations').textContent.replace(/,/g, '')) || 0;
+            const totalAssetTypes = data.assets.atf + data.assets.btf + data.assets.display + data.assets.crm;
+            const totalAssets = listings * totalAssetTypes;
+            document.getElementById('total-assets').textContent = totalAssets.toLocaleString();
+        }
+        
+        function initializeData() {
+            // Set initial checked state
+            updateDataFromCheckboxes();
+        }
+        
+        function updateDataFromCheckboxes() {
+            data.editions = getCheckedItems('editions-list');
+            data.platforms = getCheckedItems('platforms-list');
+            data.languages = getCheckedItems('languages-list');
+            data.regions = getCheckedItems('regions-list');
+            data.retailers = getCheckedItems('retailers-list');
+        }
+        
+        function getCheckedItems(listId) {
+            const items = [];
+            const list = document.getElementById(listId);
+            if (list) {
+                list.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                    items.push(checkbox.nextElementSibling.textContent);
+                });
+            }
+            return items;
+        }
+        
+        function updateAllCounts() {
+            updateDataFromCheckboxes();
+            
+            document.getElementById('editions-count').textContent = data.editions.length;
+            document.getElementById('platforms-count').textContent = data.platforms.length;
+            document.getElementById('languages-count').textContent = data.languages.length;
+            document.getElementById('regions-count').textContent = data.regions.length;
+            document.getElementById('retailers-count').textContent = data.retailers.length;
+            
+            document.getElementById('stat-editions').textContent = data.editions.length;
+            document.getElementById('stat-platforms').textContent = data.platforms.length;
+            document.getElementById('stat-languages').textContent = data.languages.length;
+            document.getElementById('stat-regions').textContent = data.regions.length;
+            document.getElementById('stat-retailers').textContent = data.retailers.length;
+            
+            document.getElementById('calc-editions').textContent = data.editions.length || 1;
+            document.getElementById('calc-platforms').textContent = data.platforms.length || 1;
+            document.getElementById('calc-languages').textContent = data.languages.length || 1;
+            document.getElementById('calc-regions').textContent = data.regions.length || 1;
+            document.getElementById('calc-retailers').textContent = data.retailers.length || 1;
+        }
+        
+        function generateMatrix() {
+            const grid = document.getElementById('matrix-grid');
+            const platforms = data.platforms;
+            const regions = data.regions;
+            
+            // Clear existing matrix
+            grid.innerHTML = '';
+            data.matrix = {};
+            
+            // Set grid template columns
+            grid.style.gridTemplateColumns = `150px repeat(${regions.length}, 1fr)`;
+            
+            // Add header row
+            const emptyHeader = document.createElement('div');
+            emptyHeader.className = 'matrix-header';
+            grid.appendChild(emptyHeader);
+            
+            regions.forEach(region => {
+                const header = document.createElement('div');
+                header.className = 'matrix-header';
+                header.textContent = region.split(' ')[0]; // Show just the country name
+                grid.appendChild(header);
+            });
+            
+            // Add platform rows
+            let activeCount = 0;
+            platforms.forEach(platform => {
+                const rowHeader = document.createElement('div');
+                rowHeader.className = 'matrix-row-header';
+                rowHeader.textContent = platform;
+                grid.appendChild(rowHeader);
+                
+                regions.forEach(region => {
+                    const cell = document.createElement('div');
+                    cell.className = 'matrix-cell';
+                    const cellId = `${platform}-${region}`;
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = cellId;
+                    checkbox.checked = true; // Default to checked
+                    checkbox.addEventListener('change', () => {
+                        data.matrix[cellId] = checkbox.checked;
+                        if (checkbox.checked) {
+                            cell.classList.add('active');
+                        } else {
+                            cell.classList.remove('active');
+                        }
+                        calculateTotal();
+                    });
+                    
+                    cell.appendChild(checkbox);
+                    if (checkbox.checked) {
+                        cell.classList.add('active');
+                        activeCount++;
+                    }
+                    data.matrix[cellId] = checkbox.checked;
+                    
+                    grid.appendChild(cell);
+                });
+            });
+            
+            document.getElementById('stat-matrix').textContent = activeCount;
+            document.getElementById('calc-matrix').textContent = activeCount;
+        }
+        
+        function calculateTotal() {
+            const editions = data.editions.length || 1;
+            const platforms = data.platforms.length || 1;
+            const languages = data.languages.length || 1;
+            const regions = data.regions.length || 1;
+            const retailers = data.retailers.length || 1;
+            
+            // Count active matrix cells
+            let activeMatrix = 0;
+            Object.values(data.matrix).forEach(isActive => {
+                if (isActive) activeMatrix++;
+            });
+            
+            document.getElementById('stat-matrix').textContent = activeMatrix;
+            document.getElementById('calc-matrix').textContent = activeMatrix;
+            
+            // Calculate total
+            const total = editions * activeMatrix * languages * retailers;
+            
+            document.getElementById('total-combinations').textContent = total.toLocaleString();
+            calculateAssets();
+        }
+        
+        function addItem(category) {
+            const inputId = `new-${category.slice(0, -1)}`;
+            const input = document.getElementById(inputId);
+            const value = input.value.trim();
+            
+            if (!value) return;
+            
+            const listId = `${category}-list`;
+            const list = document.getElementById(listId);
+            
+            // Create new checkbox item
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'control-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `${category}-${Date.now()}`;
+            checkbox.checked = true;
+            checkbox.addEventListener('change', () => {
+                updateAllCounts();
+                if (category === 'platforms' || category === 'regions') {
+                    generateMatrix();
+                }
+                calculateTotal();
+                calculateAssets();
+            });
+            
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = value;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '×';
+            deleteBtn.onclick = function() {
+                itemDiv.remove();
+                updateAllCounts();
+                if (category === 'platforms' || category === 'regions') {
+                    generateMatrix();
+                }
+                calculateTotal();
+            };
+            
+            itemDiv.appendChild(checkbox);
+            itemDiv.appendChild(label);
+            itemDiv.appendChild(deleteBtn);
+            list.appendChild(itemDiv);
+            
+            input.value = '';
+            
+            updateAllCounts();
+            if (category === 'platforms' || category === 'regions') {
+                generateMatrix();
+            }
+            calculateTotal();
+        }
+        
+        function loadPreset(preset) {
+            // Clear all first
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            if (preset === 'simple') {
+                // Simple launch: 1 edition, 2 platforms, 3 languages, 3 regions, 3 retailers
+                document.getElementById('edition-standard').checked = true;
+                document.getElementById('platform-ps5').checked = true;
+                document.getElementById('platform-xbox').checked = true;
+                document.getElementById('lang-en').checked = true;
+                document.getElementById('lang-fr').checked = true;
+                document.getElementById('lang-es').checked = true;
+                document.getElementById('region-us').checked = true;
+                document.getElementById('region-uk').checked = true;
+                document.getElementById('region-de').checked = true;
+                document.getElementById('retailer-amazon').checked = true;
+                document.getElementById('retailer-bestbuy').checked = true;
+                document.getElementById('retailer-steam').checked = true;
+            } else if (preset === 'standard') {
+                // Standard launch: 2 editions, 3 platforms, 6 languages, 6 regions, 5 retailers
+                document.getElementById('edition-standard').checked = true;
+                document.getElementById('edition-deluxe').checked = true;
+                document.getElementById('platform-ps5').checked = true;
+                document.getElementById('platform-xbox').checked = true;
+                document.getElementById('platform-pc').checked = true;
+                document.getElementById('lang-en').checked = true;
+                document.getElementById('lang-fr').checked = true;
+                document.getElementById('lang-de').checked = true;
+                document.getElementById('lang-es').checked = true;
+                document.getElementById('lang-it').checked = true;
+                document.getElementById('lang-pt').checked = true;
+                document.getElementById('region-us').checked = true;
+                document.getElementById('region-ca').checked = true;
+                document.getElementById('region-uk').checked = true;
+                document.getElementById('region-de').checked = true;
+                document.getElementById('region-fr').checked = true;
+                document.getElementById('region-es').checked = true;
+                document.getElementById('retailer-amazon').checked = true;
+                document.getElementById('retailer-bestbuy').checked = true;
+                document.getElementById('retailer-target').checked = true;
+                document.getElementById('retailer-steam').checked = true;
+                document.getElementById('retailer-playstation').checked = true;
+            } else if (preset === 'aaa') {
+                // AAA launch: all checked
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            }
+            
+            updateAllCounts();
+            generateMatrix();
+            calculateTotal();
+        }
+        
+        function selectAllRegions() {
+            document.querySelectorAll('#matrix-grid .matrix-cell input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+                cb.parentElement.classList.add('active');
+            });
+            
+            // Update matrix data
+            Object.keys(data.matrix).forEach(key => {
+                data.matrix[key] = true;
+            });
+            
+            calculateTotal();
+        }
+        
+        function clearAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            updateAllCounts();
+            generateMatrix();
+            calculateTotal();
+        }
+    </script>
+</body>
+</html>
